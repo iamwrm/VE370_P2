@@ -18,6 +18,7 @@
 `include "If_Equal.v"
 `include "Data_Mem.v"
 `include "Control.v"
+`include "Forwarding.v"
 
 
 
@@ -84,6 +85,19 @@ module pipeline(
 			ex_mem__out__ReadRegister1,
 			ex_mem__out__ReadRegister2,
 			ex_mem__out__RegisterDst;
+
+	// ========================================================
+
+	wire 		
+			mem_wb__in__MemtoReg,
+			mem_wb__in__RegWrite,
+			mem_wb__out__MemToReg,
+			mem_wb__out__RegWriteWB;
+	wire	[31:0]
+			mem_wb__out__ReadFromMemory_32,
+			mem_wb__out__ALUResult_32;
+	wire	[4:0]
+			mem_wb__out__Rd;
 
 
 	wire [31:0] 	PcNext,
@@ -385,10 +399,10 @@ module pipeline(
 		.c(ex_mem__out__ALUResult_32),
 		.out(mux_ex_1__out__data_32)
 	);
-	wire [1:0] mux_ex_1__sel__ForwadB;
+	wire [1:0] mux_ex_2__sel__ForwadB;
 	wire [31:0] mux_ex_2__out__data_32;
 	MUX321 #(32) mux_ex_2(
-		.sel(mux_ex_1__sel__ForwadB),
+		.sel(mux_ex_2__sel__ForwadB),
 		.a(id_ex__out__ReadData2_32),
 		.b(mux_mem_wb_out__out__data_32),
 		.c(ex_mem__out__ALUResult_32),
@@ -430,6 +444,27 @@ module pipeline(
 	);
 
 	// TODO: Forwarding Unit	
+
+	Forwarding forwarding(
+		.clk(clock), 
+		.MEM_WB_RegWrite(mem_wb__out__RegWriteWB) ,
+		.EX_MEM_RegWrite(ex_mem__out__RegWrite),
+		.bne(control__out__bne),
+		.beq(control__out__branch),
+//                   input [4:0] 
+		.MEM_WB_RegisterRd(mem_wb__out__Rd),
+		.ID_EX_RegisterRs(id_ex__out__ReadRegister1_5),
+		.EX_MEM_RegisterRd(ex_mem__out__RegisterDst),
+		.ID_EX_RegisterRt(id_ex__out__ReadRegister2_5),
+		.IF_ID_RegisterRs(reg_file__in__read_addr_1_5),
+		.IF_ID_RegisterRt(reg_file__in__read_addr_2_5),
+//                  output reg [1:0] 
+		.ForwardA(mux_ex_1__sel__ForwadA),
+		.ForwardB(mux_ex_2__sel__ForwadB),
+//                  output reg  
+		.Fw1(Fw1),
+		.Fw2(Fw2)
+	);
 
 
 
@@ -479,16 +514,6 @@ module pipeline(
 
 
 
-	wire 		
-			mem_wb__in__MemtoReg,
-			mem_wb__in__RegWrite,
-			mem_wb__out__MemToReg,
-			mem_wb__out__RegWriteWB;
-	wire	[31:0]
-			mem_wb__out__ReadFromMemory_32,
-			mem_wb__out__ALUResult_32;
-	wire	[4:0]
-			mem_wb__out__Rd;
 
 	assign mem_wb__in__RegWrite = ex_mem__out__RegWrite;
 	MEM_WB mem_wb(.clk(clock), .reset(reset),
