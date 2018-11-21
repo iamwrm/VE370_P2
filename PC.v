@@ -20,7 +20,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module PC( input clock,reset,
+module PC( input clock,
+           input reset,
            input [31:0] next,
            output reg [31:0] address);
     
