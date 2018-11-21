@@ -29,7 +29,7 @@ module pipeline(
 
 
 	wire [31:0] mux_pc_in_1__out;
-	MUX221 mux_pc_in_1(.sel(IfBr),
+	MUX221 mux_pc_in_1(.sel(IfBr),//TODO:
 	.a(PcNext),
 	.b(PCBranch),
 	.out(mux_pc_in_1__out)
@@ -38,7 +38,7 @@ module pipeline(
 
 	wire [31:0] mux_pc_in_2__out;
 	MUX221 mux_pc_in_2(.sel(Jump),
-	.a(PCJump),
+	.a(jump_address__out__data),
 	.b(mux_pc_in_1__out),
 	.out(mux_pc_in_2__out)
 	);
@@ -51,6 +51,17 @@ module pipeline(
 		.reset(reset), 
 		.next(pc__in__next), 
 		.address(pc__out__address)
+	);
+
+// module Jump_Address(input [25:0]JumpWhere26,
+//                     input [31:0] PCNext,
+//                     output [31:0] JumpAddress );
+
+	wire [31:0] jump_address__out__data;
+	Jump_Address jump_address(
+		.JumpWhere26(if_id__out__ins[25:0]),
+		.PCNext(pc__out__address+32'h4),
+		.JumpAddress(jump_address__out__data)
 	);
 
 
@@ -183,24 +194,30 @@ module pipeline(
 		.MemWrite(id_ex__in__MemWrite),
 		.ALUSrc(id_ex__in__ALUSrc),
 		.RegWrite(id_ex__in__RegWrite),
+		// input 1:0
 		.ALUOp(id_ex__in__ALUOp),
+		// input 31:0
 		.ReadData1(id_ex__in__ReadData1),
 		.ReadData2(id_ex__in__ReadData2),
 		.ExtendedIm(id_ex__in__ExtendedIm),
+		// input 4:0
 		.ReadRegister1(id_ex__in__ReadRegister1), 
 		.ReadRegister2(id_ex__in__ReadRegister2),
 		.Rt(id_ex__in__Rt),
 		.Rd(id_ex__in__Rd),
+		// ouput 
 		.RegDstEX(id_ex__out__RegDst),
 		.MemReadEX(id_ex__out__MemRead),
 		.MemtoRegEX(id_ex__out__MemtoReg),
 		.MemWriteEX(id_ex__out__MemWrite),
 		.ALUSrcEX(id_ex__out__ALUSrc),
 		.RegWriteEX(id_ex__out__RegWrite),
+		// ouput 31:0
 		.ALUOpEX(id_ex__out__ALUOp),
 	        .ReadData1EX(id_ex__out__ReadData1),
 		.ReadData2EX(id_ex__out__ReadData2),
 	        .ExtendedImEX(id_ex__out__ExtendedIm),
+		// 4:0
 		.ReadRegister1EX(id_ex__out__ReadRegister1),
 		.ReadRegister2EX(id_ex__out__ReadRegister2),
 		.RtEX(id_ex__out__Rt),
