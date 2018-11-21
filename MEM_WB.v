@@ -24,6 +24,7 @@ module MEM_WB(input clk,reset,
              input MemtoReg,RegWrite,
              input [31:0] Data2Write, ALUResult,
              input [4:0] RegisterDst,
+             
              output reg MemtoRegWB,RegWriteWB,
              output reg [31:0] Data2WriteWB, ALUResultWB,
              output reg [4:0] RegisterDstWB);

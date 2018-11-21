@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2018/11/15 13:39:14
+// Create Date: 2018/11/20 11:23:01
 // Design Name: 
-// Module Name: PC
+// Module Name: Top
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,15 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module PC( input clk,reset,hold,
-           input [31:0] next,
-           output reg [31:0] address);
+module Top(clock,reset,PC_out,Reg_out);
+input clock,reset;
+
+output[31:0] PC_out;
+output[31:0] Reg_out;
+
     
-    always @(posedge clk,reset) begin
     
-    if(reset==1'b1) address<=32'b0;
-    else if(hold==1'b1)  address<=address;
-    else address <= next;
-        end
-        
+  
 endmodule

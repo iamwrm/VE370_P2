@@ -45,10 +45,13 @@ module pipeline(
 
 	assign pc__in__next = mux_pc_in_2__out;
 
+	wire pc__in__hold;
+
 	wire [31:0] 	pc__in__next;
 	wire [31:0] 	pc__out__address;
-	PC pc(.clock(clock),  
+	PC pc(.clk(clock),  
 		.reset(reset), 
+		.hold(pc__in__hold),
 		.next(pc__in__next), 
 		.address(pc__out__address)
 	);
@@ -71,11 +74,14 @@ module pipeline(
 	);
 
 
+	wire if_id__in__hold, if_id__in__flush;
 	wire [31:0] 
 			if_id__in__addr, 
 			if_id__out__PCNext, 
 			if_id__out__ins;
-	IF_ID if_id(.clk(clock), .reset(reset)
+	IF_ID if_id(.clk(clock), .reset(reset),
+		.hold(if_id__in__hold),
+		.flush(if_id__in__flush),
 		.Instr(ins_mem__out__ins),
 		.Addr(if_id__in__addr),
 		.out_Instr(if_id__out__ins),
@@ -310,8 +316,8 @@ module pipeline(
 			.MemWrite(ex_mem__in__MemWrite),
 			.RegWrite(ex_mem__in__RegWrite),
 	//              input [31:0] 
-			.ALUResult(ex_mem__in__ALUResult),
-			.ReadData(ex_mem__in__ReadData),
+			.ALUResultAddr(ex_mem__in__ALUResult),
+			.DataWriteIn(ex_mem__in__ReadData),
 	//              input[4:0] 
 			.ReadRegister1(ex_mem__in__ReadRegister1), 
 			.ReadRegister2(ex_mem__in__ReadRegister2),
@@ -322,8 +328,8 @@ module pipeline(
 			.MemWriteM(ex_mem__out__MemWrite),
 			.RegWriteM(ex_mem__out__RegWrite),
 	//              output reg [31:0] 
-			.ALUResultM(ex_mem__out__ALUResult),
-			.ReadDataM(ex_mem__out__ReadData),
+			.ALUResultAddrM(ex_mem__out__ALUResult),
+			.DataWriteInM(ex_mem__out__ReadData),
 	//              output reg [4:0] 
 			.ReadRegister1M(ex_mem__out__ReadRegister1), 
 			.ReadRegister2M(ex_mem__out__ReadRegister2),

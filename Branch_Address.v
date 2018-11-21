@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2018/11/15 13:39:14
+// Create Date: 2018/11/21 02:01:24
 // Design Name: 
-// Module Name: PC
+// Module Name: Branch_Address
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,15 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module PC( input clk,reset,hold,
-           input [31:0] next,
-           output reg [31:0] address);
-    
-    always @(posedge clk,reset) begin
-    
-    if(reset==1'b1) address<=32'b0;
-    else if(hold==1'b1)  address<=address;
-    else address <= next;
-        end
-        
+module Branch_Address(
+
+    );
 endmodule

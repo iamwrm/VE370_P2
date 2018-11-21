@@ -23,13 +23,13 @@
 module EX_MEM(input clk,reset,
              input MemRead,MemtoReg,MemWrite
              ,RegWrite,
-             input [31:0] ALUResult,ReadData,
+             input [31:0] ALUResultAddr,DataWriteIn,
              input[4:0] ReadRegister1, ReadRegister2
              ,RegisterDst,
              
              output reg MemReadM,MemtoRegM,MemWriteM
              ,RegWriteM,
-             output reg [31:0] ALUResultM,ReadDataM,
+             output reg [31:0] ALUResultAddrM,DataWriteInM,
              output reg [4:0] ReadRegister1M, ReadRegister2M
              ,RegisterDstM);
              
@@ -39,8 +39,8 @@ module EX_MEM(input clk,reset,
              MemtoRegM<=1'b0;
              MemWriteM<=1'b0;
              RegWriteM<=1'b0;
-             ALUResultM<=32'b00000000000000000000000000000000;
-             ReadDataM<=32'b00000000000000000000000000000000;
+             ALUResultAddrM<=32'b00000000000000000000000000000000;
+             DataWriteInM<=32'b00000000000000000000000000000000;
              ReadRegister1M<=5'b00000;
              ReadRegister2M<=5'b00000;
              RegisterDstM<=5'b00000;             
@@ -50,8 +50,8 @@ module EX_MEM(input clk,reset,
                  MemtoRegM<=MemtoReg;
                  MemWriteM<=MemWrite;
                  RegWriteM<=RegWrite;
-                 ALUResultM<=ALUResult;
-                 ReadDataM=ReadData;
+                 ALUResultAddrM<=ALUResultAddr;
+                 DataWriteInM=DataWriteIn;
                  RegisterDstM<=RegisterDst;
                  ReadRegister1M<=ReadRegister1;
                  ReadRegister2M<=ReadRegister2;

@@ -36,6 +36,7 @@ module ALU_Control(input [5:0] funct,
                       6'b101010: control=4'b0111;//slt
                       default: control=4'b0000;
                       endcase
+               2'b11: control=4'b0000;
               default:control=4'b0000; 
               endcase
               end        
