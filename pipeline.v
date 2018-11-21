@@ -139,7 +139,7 @@ module Pipeline(
 
 	Jump_Address jump_address(
 		.JumpWhere26(if_id__out__ins_32[25:0]),
-		.PCNext(pc__out__address_32+32'h4),
+		.PCNext(PcNext),
 		.JumpAddress(jump_address__out__data_32)
 	);
 

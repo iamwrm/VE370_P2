@@ -26,9 +26,11 @@ module PC( input clk,reset,hold,
     
     always @(posedge clk,reset) begin
     
-    if(reset==1'b1) address<=32'b0;
-    else if(hold==1'b1)  address<=address;
+    if(hold==1'b1)  address<=address;
     else address <= next;
         end
+    initial begin
+    address<=32'b0;
+    end
         
 endmodule

@@ -33,7 +33,8 @@ module pipeline_tb;
 
 	// Instantiate the Unit Under Test (UUT)
 	Pipeline uut (
-		.clock(clk)
+		.clock(clk),
+        .reset(1'b0)
 	);
 
 	initial begin
@@ -50,7 +51,7 @@ module pipeline_tb;
 	//wire [31:0] 	pc__out__address_32;
     always #10 begin
         $display("Time: %d, CLK = %d, PC = 0x%H", i, clk, uut.pc__out__address_32);
-        $display("[$s0] = 0x%H, [$s1] = 0x%H, [$s2] = 0x%H", uut.reg_file.registers[17], uut.reg_file.registers[18]);
+        $display("[$s0] = 0x%H, [$s1] = 0x%H, [$s2] = 0x%H", uut.reg_file.registers[16],uut.reg_file.registers[17], uut.reg_file.registers[18]);
         $display("[$s3] = 0x%H, [$s4] = 0x%H, [$s5] = 0x%H", uut.reg_file.registers[19], uut.reg_file.registers[20], uut.reg_file.registers[21]);
         $display("[$s6] = 0x%H, [$s7] = 0x%H, [$t0] = 0x%H", uut.reg_file.registers[22], uut.reg_file.registers[23], uut.reg_file.registers[8]);
         $display("[$t1] = 0x%H, [$t2] = 0x%H, [$t3] = 0x%H", uut.reg_file.registers[9], uut.reg_file.registers[10], uut.reg_file.registers[11]);
