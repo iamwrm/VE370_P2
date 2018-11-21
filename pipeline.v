@@ -24,30 +24,43 @@ module pipeline(
 
 
 
+	wire [31:0] mux_pc_in_1__out;
+	MUX221 mux_pc_in_1(.sel(IfBr),
+	.a(PcNext),
+	.b(PCBranch),
+	.out(mux_pc_in_1__out)
+	);
+
+
+	wire [31:0] mux_pc_in_2__out;
+	MUX221 mux_pc_in_2(.sel(Jump),
+	.a(PCJump),
+	.b(mux_pc_in_1__out),
+	.out(mux_pc_in_2__out)
+	);
+
+	assign pc__in__next = mux_pc_in_2__out;
 
 	wire [31:0] pc__in__next;
 	wire [31:0] pc__out__address;
-	// module PC( input clock,
-        //    input reset,
-        //    input [31:0] next,
-        //    output reg [31:0] address);
 	PC pc(.clock(clock),  .reset(reset), .next(pc__in__next), .address(pc__out__address));
 
 
 	wire [31:0] ins_mem__out__ins;
-	// module Instruction_Mem(input [31:0] addr, 
-        //                output wire [31:0]out_Instr);
-	Instruction_Mem ins_mem(pc__out__address,
-				ins_mem__out__ins);
+	Instruction_Mem ins_mem(.addr(pc__out__address),
+				.out_Instr(ins_mem__out__ins));
 
 
 	wire [31:0] if_id__in__addr, if_id__out__addr, if_id__out__ins;
-	// module IF_ID(input clk,reset,
-        //      input [31:0] Instr, Addr,
-        //      output reg [31:0] out_Instr, out_Addr);
-	IF_ID if_id(clock,reset
-		ins_mem__out__ins,if_id__in__addr,
-		if_id__out__ins,if_id__out__addr);
+	IF_ID if_id(.clk(clock), .reset(reset)
+		.Instr(ins_mem__out__ins),
+		.Addr(if_id__in__addr),
+		.out_Instr(if_id__out__ins),
+		.out_Addr(if_id__out__addr)
+	);
+
+
+
 
 
 
@@ -121,9 +134,31 @@ module pipeline(
 	//              ,ReadRegister2EX,RtEX,RdEX
 	//              );
 	ID_EX id_ex(.clk(clock), .reset(reset),
-
-
+	        //      input RegDst,MemRead
+	        //      ,MemtoReg,MemWrite,ALUSrc
+	        //      ,RegWrite,
+	        //      input [1:0] ALUOp,
+	        //      input [31:0] ReadData1,ReadData2,ExtendedIm,
+	        //      input[4:0] ReadRegister1, ReadRegister2
+	        //      ,Rt,Rd,
+	        //      output reg RegDstEX,MemReadEX
+	        //      ,MemtoRegEX,MemWriteEX,ALUSrcEX
+	        //      ,RegWriteEX,
+	        //      output reg [1:0] ALUOpEX,
+	        //      output reg [31:0] ReadData1EX,ReadData2EX
+	        //      ,ExtendedImEX,
+	        //      output reg[4:0] ReadRegister1EX
+	        //      ,ReadRegister2EX,RtEX,RdEX
 	);
+
+	// TODO: 4 mux 
+
+	// TODO: ALU
+
+	// TODO: ALU control
+
+	// TODO: Forwarding Unit	
+
 
 
 
@@ -144,6 +179,19 @@ module pipeline(
 	);
 
 
+	// module Data_Mem(input [31:0] address,
+	//                 input [31:0] Write_data,
+	//                 input MemWrite, MemRead,clk,
+	//                 output reg [31:0]Read_data);
+	Data_Mem data_mem(
+
+
+	);
+
+
+
+
+
 	// module MEM_WB(input clk,reset,
 	//              input MemtoReg,RegWrite,
 	//              input [31:0] Data2Write, ALUResult,
@@ -151,10 +199,17 @@ module pipeline(
 	//              output reg MemtoRegWB,RegWriteWB,
 	//              output reg [31:0] Data2WriteWB, ALUResultWB,
 	//              output reg [4:0] RegisterDstWB);
-	MEM_WB mem_wb(clock,reset,
+	MEM_WB mem_wb(.clock(clock), .reset(reset),
 	
 	
 
+	);
+
+
+	MUX221 mux_mem_wb_out(.sel(mem_wb__out__MemToReg),
+		.a(mem_wb__out__ReadFromMemory),
+		.b(mem_wb__out__ALUResult),
+		.out(mux_mem_wb_out__out__data)
 	);
 
 	
