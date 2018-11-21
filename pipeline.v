@@ -19,7 +19,7 @@ module pipeline(
 	input clock,
 	input reset,
 	input [4:0] register_switch, 
-	output [31:0] pc_out, 
+	output [31:0] pc_out,  
 	reg [31:0] register_out);
 
 
@@ -50,6 +50,8 @@ module pipeline(
 		if_id__out__ins,if_id__out__addr);
 
 
+
+	// TODO:
 	// module Hazard( input ID_EX_MemRead,EX_MEM_MemRead,clk,jump,bne,beq,IfEqual,
 	//                input [4:0] ID_EX_RegisterRt,IF_ID_RegisterRs, IF_ID_RegisterRt,EX_MEM_RegisterRt,
 	//                output PC_Hold,IF_ID_Hold,ID_EX_Flush,IF_Flush);
@@ -58,37 +60,42 @@ module pipeline(
 	);
 
 
-	wire RegWrite;
-	wire [4:0] read_register_1_addr,read_register_2_addr,write_register_addr;
+	wire reg_file__in__RegWrite;
+	wire [4:0] reg_file__in__read_addr_1, reg_file__in__read_addr_2,reg_file__in__write_addr;
 	// module Reg_File(input clk ,RegWrite,
 	//               input [4:0] ReadRegister1, ReadRegister2,WriteReg,
 	//        	        input [31:0] WriteData,
 	//        	        output wire [31:0] read_data1, read_data2
 	// );      
-	Reg_File reg_file(.clk(clock), .RegWrite(RegWrite),
-		.ReadRegister1(read_register_1_addr), read_register_2_addr, write_register_addr,
-		write_data,
-		read_data_1, read_data_2);
+	Reg_File reg_file(.clk(clock), 
+		.RegWrite(reg_file__in__RegWrite),
+		.ReadRegister1(reg_file__in__read_addr_1),  
+		.ReadRegister2( reg_file__in__read_addr_2), 
+		.WriteReg(reg_file__in__write_addr),
+		.WriteData(reg_file__in__write_data),
+		.read_data1(reg_file__out__read_data_1), 
+		.read_data2(reg_file__out__read_data_2)
+	);
 
 
 	wire Fw1;
-	wire [31:0] mux_regfile_out_1_value;
-	wire [31:0] ex_mem_out_address; // TODO:
+	wire [31:0] mux_regfile_out_1__out__data;
+	wire [31:0] ex_mem__out__address; // TODO:
 	MUX221 #(32) mux_regfile_out_1(
 		.sel(Fw1),
-		.a(read_data_1),
-		.b(ex_mem_out_address), 
-		.out(mux_regfile_out_1_value)
+		.a(reg_file__out__read_data_1),
+		.b(ex_mem__out__address), 
+		.out(mux_regfile_out_1__out__data)
 	);
 
 
 	wire Fw2;
-	wire [31:0] mux_regfile_out_2_value;
+	wire [31:0] mux_regfile_out_2___out__data;
 	MUX221 #(32) mux_regfile_out_2(
 		.sel(Fw2),
-		.a(read_data_2),
-		.b(ex_mem_out_address), 
-		.out(mux_regfile_out_2_value)
+		.a(reg_file__out__read_data_2),
+		.b(ex_mem__out__address), 
+		.out(mux_regfile_out_2___out__data)
 	);
 
 	
