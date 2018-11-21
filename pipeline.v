@@ -24,6 +24,10 @@ module pipeline(
 
 
 
+	assign PcNext = pc__out__address+32'h4;
+	assign PCBranch = if_id__out__PCNext + (sign_extend__out__data<<2);
+
+
 	wire [31:0] mux_pc_in_1__out;
 	MUX221 mux_pc_in_1(.sel(IfBr),
 	.a(PcNext),
@@ -41,23 +45,32 @@ module pipeline(
 
 	assign pc__in__next = mux_pc_in_2__out;
 
-	wire [31:0] pc__in__next;
-	wire [31:0] pc__out__address;
-	PC pc(.clock(clock),  .reset(reset), .next(pc__in__next), .address(pc__out__address));
+	wire [31:0] 	pc__in__next;
+	wire [31:0] 	pc__out__address;
+	PC pc(.clock(clock),  
+		.reset(reset), 
+		.next(pc__in__next), 
+		.address(pc__out__address)
+	);
 
 
-	wire [31:0] ins_mem__out__ins;
+	wire [31:0] 	ins_mem__out__ins;
 	Instruction_Mem ins_mem(.addr(pc__out__address),
-				.out_Instr(ins_mem__out__ins));
+				.out_Instr(ins_mem__out__ins)
+	);
 
 
-	wire [31:0] if_id__in__addr, if_id__out__addr, if_id__out__ins;
+	wire [31:0] 
+			if_id__in__addr, 
+			if_id__out__PCNext, 
+			if_id__out__ins;
 	IF_ID if_id(.clk(clock), .reset(reset)
 		.Instr(ins_mem__out__ins),
 		.Addr(if_id__in__addr),
 		.out_Instr(if_id__out__ins),
-		.out_Addr(if_id__out__addr)
+		.out_Addr(if_id__out__PCNext)
 	);
+
 
 
 
@@ -71,6 +84,10 @@ module pipeline(
 	Hazard hazard(
 
 	);
+
+	// TODO: Control
+
+	// TODO: Mux
 
 
 	wire [31:0] sign_extend__out__data;
@@ -96,9 +113,10 @@ module pipeline(
 	);
 
 
+
 	wire Fw1;
 	wire [31:0] mux_regfile_out_1__out__data;
-	wire [31:0] ex_mem__out__address; // TODO:
+	wire [31:0] ex_mem__out__address; 
 	MUX221 #(32) mux_regfile_out_1(
 		.sel(Fw1),
 		.a(reg_file__out__read_data_1),
@@ -108,15 +126,21 @@ module pipeline(
 
 
 	wire Fw2;
-	wire [31:0] mux_regfile_out_2___out__data;
+	wire [31:0] mux_regfile_out_2__out__data;
 	MUX221 #(32) mux_regfile_out_2(
 		.sel(Fw2),
 		.a(reg_file__out__read_data_2),
 		.b(ex_mem__out__address), 
-		.out(mux_regfile_out_2___out__data)
+		.out(mux_regfile_out_2__out__data)
 	);
 
-	
+	wire 	if_equal__out__if_zero;
+	If_Equal if_equal(
+		.a(mux_regfile_out_1__out__data),
+		.b(mux_regfile_out_2__out__data),
+		.IfEqual(if_equal__out__if_zero)
+	);
+
 	
 	
 
@@ -343,26 +367,5 @@ module pipeline(
 		.b(mem_wb__out__ALUResult),
 		.out(mux_mem_wb_out__out__data)
 	);
-
-	
-
-
-	
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 endmodule
