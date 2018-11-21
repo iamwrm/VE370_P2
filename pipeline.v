@@ -140,7 +140,7 @@ module pipeline(
 			id_ex__in__ExtendedIm, 
 			id_ex__in__ReadData1, 
 			id_ex__in__ReadData2,
-			id_ex__out_ExtendedIm,
+			id_ex__out__ExtendedIm,
 			id_ex__out__ReadData1,
 			id_ex__out__ReadData2;
 	wire [4:0] 	
@@ -176,7 +176,7 @@ module pipeline(
 		.ALUOpEX(id_ex__out__ALUOp),
 	        .ReadData1EX(id_ex__out__ReadData1),
 		.ReadData2EX(id_ex__out__ReadData2),
-	        .ExtendedImEX(id_ex__out_ExtendedIm),
+	        .ExtendedImEX(id_ex__out__ExtendedIm),
 		.ReadRegister1EX(id_ex__out__ReadRegister1),
 		.ReadRegister2EX(id_ex__out__ReadRegister2),
 		.RtEX(id_ex__out__Rt),
@@ -186,19 +186,55 @@ module pipeline(
 	assign mux_regfile_out_1__out__data=id_ex__in__ReadData1;
 	assign mux_regfile_out_2__out__data=id_ex__in__ReadData2;
 
-	// TODO: 4 mux 
 
-	MUX321 mux_ex_1();
-	MUX321 mux_ex_2();
-	MUX221 mux_ex_3();
-	MUX221 mux_ex_4();
+	wire [31:0] mux_ex_1__out__data;
+	MUX321 mux_ex_1(
+		.sel(mux_ex_1__sel__ForwadA),
+		.a(id_ex__out__ReadData1),
+		.b(mux_mem_wb_out__out__data),
+		.c(ex_mem__out__ALUResult),
+		.out(mux_ex_1__out__data)
+	);
+	wire [31:0] mux_ex_2__out__data;
+	MUX321 mux_ex_2(
+		.sel(mux_ex_1__sel__ForwadB),
+		.a(id_ex__out__ReadData2),
+		.b(mux_mem_wb_out__out__data),
+		.c(ex_mem__out__ALUResult),
+		.out(mux_ex_2__out__data)
+	);
 
-	// TODO: ALU
+	wire [31:0] mux_ex_3__out__data;
+	MUX221 mux_ex_3(
+		.sel(mux_ex_3__in__ALUsrc),
+		.a(mux_ex_2__out__data),
+		.b(id_ex__out__ExtendedIm)
+		.out(mux_ex_3__out__data)
+	);
+	wire mux_ex_4__in__RegDst;
+	wire [31:0] mux_ex_4__out__data;
+	MUX221 mux_ex_4(
+		.sel(mux_ex_4__in__RegDst),
+		.a(id_ex__out__ReadRegister1),
+		.b(id_ex__out__ReadRegister2),
+		.out(mux_ex_4__out__data)
+	);
 
-	ALU alu();
 
-	// TODO: ALU control
-	ALU_Control alu_control();
+	wire [31:0] alu__out__data;
+	ALU alu(
+		.control(alu__in__alu_control),
+		.a(mux_ex_1__out__data),
+		.b(mux_ex_3__out__data),
+		.result(alu__out__data)
+	);
+
+	wire [4:0] alu_control__in__funct;
+	ALU_Control alu_control(
+		.funct(alu_control__in__funct),
+		.ALUop(alu_control__in__ALUop),
+		.control(alu__in__alu_control)
+	);
 
 	// TODO: Forwarding Unit	
 
@@ -225,7 +261,9 @@ module pipeline(
 			ex_mem__out__ReadRegister2,
 			ex_mem__out__RegisterDst ;
 
-	EX_MEM ex_mem( .clk(clock), .reset(reset),
+	EX_MEM ex_mem( 
+	// 		input
+			.clk(clock), .reset(reset),
 			.MemRead(ex_mem__in__MemRead),
 			.MemtoReg(ex_mem__in__MemtoReg),
 			.MemWrite(ex_mem__in__MemWrite),
@@ -252,33 +290,54 @@ module pipeline(
 	);
 
 
-	// module Data_Mem(input [31:0] address,
-	//                 input [31:0] Write_data,
-	//                 input MemWrite, MemRead,clk,
-	//                 output reg [31:0]Read_data);
+	wire	[31:0]	data_mem__out__Data;
 	Data_Mem data_mem(
-
-
+	//	input [31:0]
+		.address(ex_mem__out__ALUResult), 
+		.WriteData(ex_mem__out__ReadData), 
+	//	input 
+		.MemWrite(ex_mem__out__MemWrite),
+		.MemRead(ex_mem__out__MemRead),
+		.clk(clock),
+	//	output [31:0]
+		.Read_data(data_mem__out__Data)
 	);
 
 
 
 
 
-	// module MEM_WB(input clk,reset,
-	//              input MemtoReg,RegWrite,
-	//              input [31:0] Data2Write, ALUResult,
-	//              input [4:0] RegisterDst,
-	//              output reg MemtoRegWB,RegWriteWB,
-	//              output reg [31:0] Data2WriteWB, ALUResultWB,
-	//              output reg [4:0] RegisterDstWB);
+	wire 		
+			mem_wb__in__MemtoReg,
+			mem_wb__out__MemToReg,
+			mem_wb__out__RegWriteWB;
+	wire	[31:0]
+			mem_wb__out__ReadFromMemory,
+			mem_wb__out__ALUResult;
+	wire	[4:0]
+			mem_wb__out__Rd;
 	MEM_WB mem_wb(.clock(clock), .reset(reset),
-	
-	
-
+	//              input 
+			.MemtoReg(mem_wb__in__MemtoReg),
+			.RegWrite(ex_mem__out__RegWrite),
+	//              input [31:0] 
+			.Data2Write(data_mem__out__Data), 
+			.ALUResult(ex_mem__out__ALUResult),
+	//              input [4:0] 
+			.RegisterDst(ex_mem__out__RegisterDst),
+	//              output reg 
+			.MemtoRegWB(mem_wb__out__MemToReg),
+			.RegWriteWB(mem_wb__out__RegWriteWB),
+	//              output reg [31:0] 
+			.Data2WriteWB(mem_wb__out__ReadFromMemory), 
+			.ALUResultWB(mem_wb__out__ALUResult),
+	//              output reg [4:0] 
+			.RegisterDstWB(mem_wb__out__Rd)
 	);
 
 
+
+	wire [31:0]	mux_mem_wb_out__out__data;
 	MUX221 mux_mem_wb_out(.sel(mem_wb__out__MemToReg),
 		.a(mem_wb__out__ReadFromMemory),
 		.b(mem_wb__out__ALUResult),
