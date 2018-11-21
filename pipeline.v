@@ -24,68 +24,67 @@ module pipeline(
 
 
 
-	assign PcNext = pc__out__address+32'h4;
-	assign PCBranch = if_id__out__PCNext + (sign_extend__out__data<<2);
+	assign PcNext = pc__out__address_32+32'h4;
+	assign PCBranch = if_id__out__PCNext_32 + (sign_extend__out__data_32<<2);
 
 
-	wire [31:0] mux_pc_in_1__out;
+	wire [31:0] mux_pc_in_1__out_32;
 	MUX221 mux_pc_in_1(.sel(IfBr),//TODO:
 	.a(PcNext),
 	.b(PCBranch),
-	.out(mux_pc_in_1__out)
+	.out(mux_pc_in_1__out_32)
 	);
 
 
-	wire [31:0] mux_pc_in_2__out;
+	wire [31:0] mux_pc_in_2__out_32;
 	MUX221 mux_pc_in_2(.sel(Jump),
-	.a(jump_address__out__data),
-	.b(mux_pc_in_1__out),
-	.out(mux_pc_in_2__out)
+	.a(jump_address__out__data_32),
+	.b(mux_pc_in_1__out_32),
+	.out(mux_pc_in_2__out_32)
 	);
 
-	assign pc__in__next = mux_pc_in_2__out;
+	assign pc__in__next_32 = mux_pc_in_2__out_32;
 
 	wire pc__in__hold;
 
-	wire [31:0] 	pc__in__next;
-	wire [31:0] 	pc__out__address;
+	wire [31:0] 	pc__in__next_32;
+	wire [31:0] 	pc__out__address_32;
 	PC pc(.clk(clock),  
 		.reset(reset), 
 		.hold(pc__in__hold),
-		.next(pc__in__next), 
-		.address(pc__out__address)
+		.next(pc__in__next_32), 
+		.address(pc__out__address_32)
 	);
 
-// module Jump_Address(input [25:0]JumpWhere26,
-//                     input [31:0] PCNext,
-//                     output [31:0] JumpAddress );
 
-	wire [31:0] jump_address__out__data;
+	wire [31:0] jump_address__out__data_32;
 	Jump_Address jump_address(
-		.JumpWhere26(if_id__out__ins[25:0]),
-		.PCNext(pc__out__address+32'h4),
-		.JumpAddress(jump_address__out__data)
+		.JumpWhere26(if_id__out__ins_32[25:0]),
+		.PCNext(pc__out__address_32+32'h4),
+		.JumpAddress(jump_address__out__data_32)
 	);
 
 
-	wire [31:0] 	ins_mem__out__ins;
-	Instruction_Mem ins_mem(.addr(pc__out__address),
-				.out_Instr(ins_mem__out__ins)
+	wire [31:0] 	ins_mem__out__ins_32;
+	Instruction_Mem ins_mem(.addr(pc__out__address_32),
+				.out_Instr(ins_mem__out__ins_32)
 	);
 
 
-	wire if_id__in__hold, if_id__in__flush;
+	wire 		
+			if_id__in__hold, 
+			if_id__in__flush;
 	wire [31:0] 
-			if_id__in__addr, 
-			if_id__out__PCNext, 
-			if_id__out__ins;
+			if_id__in__addr_32, 
+			if_id__out__PCNext_32, 
+			if_id__out__ins_32;
 	IF_ID if_id(.clk(clock), .reset(reset),
 		.hold(if_id__in__hold),
 		.flush(if_id__in__flush),
-		.Instr(ins_mem__out__ins),
-		.Addr(if_id__in__addr),
-		.out_Instr(if_id__out__ins),
-		.out_Addr(if_id__out__PCNext)
+		.Instr(ins_mem__out__ins_32),
+		.Addr(if_id__in__addr_32),
+		.out_Instr(if_id__out__ins_32),
+		.out_Addr(if_id__out__PCNext_32)
 	);
 
 
@@ -107,54 +106,63 @@ module pipeline(
 	// TODO: Mux
 
 
-	wire [31:0] sign_extend__out__data;
-	Sign_Extend sign_extend(.small_In(if_id__out__ins[15:0]),
-		.big_Out(sign_extend__out__data)
+	wire [31:0] sign_extend__out__data_32;
+	Sign_Extend sign_extend(.small_In(if_id__out__ins_32[15:0]),
+		.big_Out(sign_extend__out__data_32)
 	);
 
 
-	assign reg_file__in__read_addr_1 = if_id__out__ins[25:21];
-    	assign reg_file__in__read_addr_2 = if_id__out__ins[20:16];
+	assign reg_file__in__read_addr_1_5 = if_id__out__ins_32[25:21];
+    	assign reg_file__in__read_addr_2_5 = if_id__out__ins_32[20:16];
 
 
 	wire reg_file__in__RegWrite;
-	wire [4:0] reg_file__in__read_addr_1, reg_file__in__read_addr_2,reg_file__in__write_addr;
+	wire [4:0] 	
+			reg_file__in__read_addr_1_5, 
+			reg_file__in__read_addr_2_5,
+			reg_file__in__write_addr_2_5
+			;
+	wire [31:0]
+			reg_file__in__write_data_32,
+			reg_file__out__read_data_1_32,
+			reg_file__out__read_data_2_32,
+			;
 	Reg_File reg_file(.clk(clock), 
 		.RegWrite(reg_file__in__RegWrite),
-		.ReadRegister1(reg_file__in__read_addr_1),  
-		.ReadRegister2( reg_file__in__read_addr_2), 
-		.WriteReg(reg_file__in__write_addr),
-		.WriteData(reg_file__in__write_data),
-		.read_data1(reg_file__out__read_data_1), 
-		.read_data2(reg_file__out__read_data_2)
+		.ReadRegister1(reg_file__in__read_addr_1_5),  
+		.ReadRegister2( reg_file__in__read_addr_2_5), 
+		.WriteReg(reg_file__in__write_addr_2_5),
+		.WriteData(reg_file__in__write_data_32),
+		.read_data1(reg_file__out__read_data_1_32), 
+		.read_data2(reg_file__out__read_data_2_32)
 	);
 
 
 
 	wire Fw1;
-	wire [31:0] mux_regfile_out_1__out__data;
-	wire [31:0] ex_mem__out__address; 
+	wire [31:0] mux_regfile_out_1__out__data_32;
+	wire [31:0] ex_mem__out__address_32; 
 	MUX221 #(32) mux_regfile_out_1(
 		.sel(Fw1),
-		.a(reg_file__out__read_data_1),
-		.b(ex_mem__out__address), 
-		.out(mux_regfile_out_1__out__data)
+		.a(reg_file__out__read_data_1_32),
+		.b(ex_mem__out__address_32), 
+		.out(mux_regfile_out_1__out__data_32)
 	);
 
 
 	wire Fw2;
-	wire [31:0] mux_regfile_out_2__out__data;
+	wire [31:0] mux_regfile_out_2__out__data_32;
 	MUX221 #(32) mux_regfile_out_2(
 		.sel(Fw2),
-		.a(reg_file__out__read_data_2),
-		.b(ex_mem__out__address), 
-		.out(mux_regfile_out_2__out__data)
+		.a(reg_file__out__read_data_2_32),
+		.b(ex_mem__out__address_32), 
+		.out(mux_regfile_out_2__out__data_32)
 	);
 
 	wire 	if_equal__out__if_zero;
 	If_Equal if_equal(
-		.a(mux_regfile_out_1__out__data),
-		.b(mux_regfile_out_2__out__data),
+		.a(mux_regfile_out_1__out__data_32),
+		.b(mux_regfile_out_2__out__data_32),
 		.IfEqual(if_equal__out__if_zero)
 	);
 
@@ -175,24 +183,24 @@ module pipeline(
 			id_ex__out__ALUSrc,
 			id_ex__out__RegWrite;
 	wire [1:0] 	
-			id_ex__in__ALUOp,
-			id_ex__out__ALUOp;
+			id_ex__in__ALUOp_2,
+			id_ex__out__ALUOp_2;
 	wire [31:0] 	
-			id_ex__in__ExtendedIm, 
-			id_ex__in__ReadData1, 
-			id_ex__in__ReadData2,
-			id_ex__out__ExtendedIm,
-			id_ex__out__ReadData1,
-			id_ex__out__ReadData2;
+			id_ex__in__ExtendedIm_32, 
+			id_ex__in__ReadData1_32, 
+			id_ex__in__ReadData2_32,
+			id_ex__out__ExtendedIm_32,
+			id_ex__out__ReadData1_32,
+			id_ex__out__ReadData2_32;
 	wire [4:0] 	
-			id_ex__in__ReadRegister1,
-			id_ex__in__ReadRegister2,
-			id_ex__in__Rt,
-			id_ex__in__Rd,
-			id_ex__out__ReadRegister1,
-			id_ex__out__ReadRegister2,
-			id_ex__out__Rt,
-			id_ex__out__Rd;
+			id_ex__in__ReadRegister1_5,
+			id_ex__in__ReadRegister2_5,
+			id_ex__in__Rt_5,
+			id_ex__in__Rd_5,
+			id_ex__out__ReadRegister1_5,
+			id_ex__out__ReadRegister2_5,
+			id_ex__out__Rt_5,
+			id_ex__out__Rd_5;
 	ID_EX id_ex(.clk(clock), .reset(reset),
 	        .RegDst(id_ex__in__RegDst),
 		.MemRead(id_ex__in__MemRead),
@@ -201,16 +209,16 @@ module pipeline(
 		.ALUSrc(id_ex__in__ALUSrc),
 		.RegWrite(id_ex__in__RegWrite),
 		// input 1:0
-		.ALUOp(id_ex__in__ALUOp),
+		.ALUOp(id_ex__in__ALUOp_2),
 		// input 31:0
-		.ReadData1(id_ex__in__ReadData1),
-		.ReadData2(id_ex__in__ReadData2),
-		.ExtendedIm(id_ex__in__ExtendedIm),
+		.ReadData1(id_ex__in__ReadData1_32),
+		.ReadData2(id_ex__in__ReadData2_32),
+		.ExtendedIm(id_ex__in__ExtendedIm_32),
 		// input 4:0
-		.ReadRegister1(id_ex__in__ReadRegister1), 
-		.ReadRegister2(id_ex__in__ReadRegister2),
-		.Rt(id_ex__in__Rt),
-		.Rd(id_ex__in__Rd),
+		.ReadRegister1(id_ex__in__ReadRegister1_5), 
+		.ReadRegister2(id_ex__in__ReadRegister2_5),
+		.Rt(id_ex__in__Rt_5),
+		.Rd(id_ex__in__Rd_5),
 		// ouput 
 		.RegDstEX(id_ex__out__RegDst),
 		.MemReadEX(id_ex__out__MemRead),
@@ -219,61 +227,63 @@ module pipeline(
 		.ALUSrcEX(id_ex__out__ALUSrc),
 		.RegWriteEX(id_ex__out__RegWrite),
 		// ouput 31:0
-		.ALUOpEX(id_ex__out__ALUOp),
-	        .ReadData1EX(id_ex__out__ReadData1),
-		.ReadData2EX(id_ex__out__ReadData2),
-	        .ExtendedImEX(id_ex__out__ExtendedIm),
+		.ALUOpEX(id_ex__out__ALUOp_2),
+	        .ReadData1EX(id_ex__out__ReadData1_32),
+		.ReadData2EX(id_ex__out__ReadData2_32),
+	        .ExtendedImEX(id_ex__out__ExtendedIm_32),
 		// 4:0
-		.ReadRegister1EX(id_ex__out__ReadRegister1),
-		.ReadRegister2EX(id_ex__out__ReadRegister2),
-		.RtEX(id_ex__out__Rt),
-		.RdEX(id_ex__out__Rd)
+		.ReadRegister1EX(id_ex__out__ReadRegister1_5),
+		.ReadRegister2EX(id_ex__out__ReadRegister2_5),
+		.RtEX(id_ex__out__Rt_5),
+		.RdEX(id_ex__out__Rd_5)
 	);
 
-	assign mux_regfile_out_1__out__data=id_ex__in__ReadData1;
-	assign mux_regfile_out_2__out__data=id_ex__in__ReadData2;
+	
+
+	assign mux_regfile_out_1__out__data_32=id_ex__in__ReadData1_32;
+	assign mux_regfile_out_2__out__data_32=id_ex__in__ReadData2_32;
 
 
-	wire [31:0] mux_ex_1__out__data;
+	wire [31:0] mux_ex_1__out__data_32;
 	MUX321 mux_ex_1(
 		.sel(mux_ex_1__sel__ForwadA),
-		.a(id_ex__out__ReadData1),
-		.b(mux_mem_wb_out__out__data),
-		.c(ex_mem__out__ALUResult),
-		.out(mux_ex_1__out__data)
+		.a(id_ex__out__ReadData1_32),
+		.b(mux_mem_wb_out__out__data_32),
+		.c(ex_mem__out__ALUResult_32),
+		.out(mux_ex_1__out__data_32)
 	);
-	wire [31:0] mux_ex_2__out__data;
+	wire [31:0] mux_ex_2__out__data_32;
 	MUX321 mux_ex_2(
 		.sel(mux_ex_1__sel__ForwadB),
-		.a(id_ex__out__ReadData2),
-		.b(mux_mem_wb_out__out__data),
-		.c(ex_mem__out__ALUResult),
-		.out(mux_ex_2__out__data)
+		.a(id_ex__out__ReadData2_32),
+		.b(mux_mem_wb_out__out__data_32),
+		.c(ex_mem__out__ALUResult_32),
+		.out(mux_ex_2__out__data_32)
 	);
 
-	wire [31:0] mux_ex_3__out__data;
+	wire [31:0] mux_ex_3__out__data_32;
 	MUX221 mux_ex_3(
 		.sel(mux_ex_3__in__ALUsrc),
-		.a(mux_ex_2__out__data),
-		.b(id_ex__out__ExtendedIm)
-		.out(mux_ex_3__out__data)
+		.a(mux_ex_2__out__data_32),
+		.b(id_ex__out__ExtendedIm_32)
+		.out(mux_ex_3__out__data_32)
 	);
 	wire mux_ex_4__in__RegDst;
-	wire [31:0] mux_ex_4__out__data;
+	wire [31:0] mux_ex_4__out__data_32;
 	MUX221 mux_ex_4(
 		.sel(mux_ex_4__in__RegDst),
-		.a(id_ex__out__ReadRegister1),
-		.b(id_ex__out__ReadRegister2),
-		.out(mux_ex_4__out__data)
+		.a(id_ex__out__ReadRegister1_5),
+		.b(id_ex__out__ReadRegister2_5),
+		.out(mux_ex_4__out__data_32)
 	);
 
 
-	wire [31:0] alu__out__data;
+	wire [31:0] alu__out__data_32;
 	ALU alu(
 		.control(alu__in__alu_control),
-		.a(mux_ex_1__out__data),
-		.b(mux_ex_3__out__data),
-		.result(alu__out__data)
+		.a(mux_ex_1__out__data_32),
+		.b(mux_ex_3__out__data_32),
+		.result(alu__out__data_32)
 	);
 
 	wire [4:0] alu_control__in__funct;
@@ -296,17 +306,17 @@ module pipeline(
 			ex_mem__out__MemWrite,
 			ex_mem__out__RegWrite ;	
 	wire [31:0]	
-			ex_mem__in__ALUResult,
-			ex_mem__in__ReadData,
-			ex_mem__out__ALUResult,
-			ex_mem__out__ReadData ;
+			ex_mem__in__ALUResult_32,
+			ex_mem__in__ReadData_32,
+			ex_mem__out__ALUResult_32,
+			ex_mem__out__ReadData_32 ;
 	wire [4:0]	
 			ex_mem__in__ReadRegister1,
 			ex_mem__in__ReadRegister2,
 			ex_mem__in__RegisterDst,
 			ex_mem__out__ReadRegister1,
 			ex_mem__out__ReadRegister2,
-			ex_mem__out__RegisterDst ;
+			ex_mem__out__RegisterDst;
 
 	EX_MEM ex_mem( 
 	// 		input
@@ -316,8 +326,8 @@ module pipeline(
 			.MemWrite(ex_mem__in__MemWrite),
 			.RegWrite(ex_mem__in__RegWrite),
 	//              input [31:0] 
-			.ALUResultAddr(ex_mem__in__ALUResult),
-			.DataWriteIn(ex_mem__in__ReadData),
+			.ALUResultAddr(ex_mem__in__ALUResult_32),
+			.DataWriteIn(ex_mem__in__ReadData_32),
 	//              input[4:0] 
 			.ReadRegister1(ex_mem__in__ReadRegister1), 
 			.ReadRegister2(ex_mem__in__ReadRegister2),
@@ -328,8 +338,8 @@ module pipeline(
 			.MemWriteM(ex_mem__out__MemWrite),
 			.RegWriteM(ex_mem__out__RegWrite),
 	//              output reg [31:0] 
-			.ALUResultAddrM(ex_mem__out__ALUResult),
-			.DataWriteInM(ex_mem__out__ReadData),
+			.ALUResultAddrM(ex_mem__out__ALUResult_32),
+			.DataWriteInM(ex_mem__out__ReadData_32),
 	//              output reg [4:0] 
 			.ReadRegister1M(ex_mem__out__ReadRegister1), 
 			.ReadRegister2M(ex_mem__out__ReadRegister2),
@@ -337,17 +347,17 @@ module pipeline(
 	);
 
 
-	wire	[31:0]	data_mem__out__Data;
+	wire	[31:0]	data_mem__out__Data_32;
 	Data_Mem data_mem(
 	//	input [31:0]
-		.address(ex_mem__out__ALUResult), 
-		.WriteData(ex_mem__out__ReadData), 
+		.address(ex_mem__out__ALUResult_32), 
+		.WriteData(ex_mem__out__ReadData_32), 
 	//	input 
 		.MemWrite(ex_mem__out__MemWrite),
 		.MemRead(ex_mem__out__MemRead),
 		.clk(clock),
 	//	output [31:0]
-		.Read_data(data_mem__out__Data)
+		.Read_data(data_mem__out__Data_32)
 	);
 
 
@@ -359,8 +369,8 @@ module pipeline(
 			mem_wb__out__MemToReg,
 			mem_wb__out__RegWriteWB;
 	wire	[31:0]
-			mem_wb__out__ReadFromMemory,
-			mem_wb__out__ALUResult;
+			mem_wb__out__ReadFromMemory_32,
+			mem_wb__out__ALUResult_32;
 	wire	[4:0]
 			mem_wb__out__Rd;
 	MEM_WB mem_wb(.clock(clock), .reset(reset),
@@ -368,27 +378,27 @@ module pipeline(
 			.MemtoReg(mem_wb__in__MemtoReg),
 			.RegWrite(ex_mem__out__RegWrite),
 	//              input [31:0] 
-			.Data2Write(data_mem__out__Data), 
-			.ALUResult(ex_mem__out__ALUResult),
+			.Data2Write(data_mem__out__Data_32), 
+			.ALUResult(ex_mem__out__ALUResult_32),
 	//              input [4:0] 
 			.RegisterDst(ex_mem__out__RegisterDst),
 	//              output reg 
 			.MemtoRegWB(mem_wb__out__MemToReg),
 			.RegWriteWB(mem_wb__out__RegWriteWB),
 	//              output reg [31:0] 
-			.Data2WriteWB(mem_wb__out__ReadFromMemory), 
-			.ALUResultWB(mem_wb__out__ALUResult),
+			.Data2WriteWB(mem_wb__out__ReadFromMemory_32), 
+			.ALUResultWB(mem_wb__out__ALUResult_32),
 	//              output reg [4:0] 
 			.RegisterDstWB(mem_wb__out__Rd)
 	);
 
 
 
-	wire [31:0]	mux_mem_wb_out__out__data;
+	wire [31:0]	mux_mem_wb_out__out__data_32;
 	MUX221 mux_mem_wb_out(.sel(mem_wb__out__MemToReg),
-		.a(mem_wb__out__ReadFromMemory),
-		.b(mem_wb__out__ALUResult),
-		.out(mux_mem_wb_out__out__data)
+		.a(mem_wb__out__ReadFromMemory_32),
+		.b(mem_wb__out__ALUResult_32),
+		.out(mux_mem_wb_out__out__data_32)
 	);
 
 endmodule
