@@ -21,7 +21,7 @@
 
 
 module MUX221
-            #(parameter bits=16)
+            #(parameter bits=32)
              (  input sel,
                 input [bits-1:0] a, b,
                 output reg [bits-1:0] out );

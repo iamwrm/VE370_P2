@@ -22,7 +22,7 @@
 
 module MUX321
             #(parameter bits=16)
-            (input sel,
+            (input [1:0] sel,
              input [bits-1:0] a, b, c,
              output reg [bits-1:0] out );
             always @(sel, a, b, c) begin
