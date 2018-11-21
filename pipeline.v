@@ -446,7 +446,6 @@ module pipeline(
 	// TODO: Forwarding Unit	
 
 	Forwarding forwarding(
-		.clk(clock), 
 		.MEM_WB_RegWrite(mem_wb__out__RegWriteWB) ,
 		.EX_MEM_RegWrite(ex_mem__out__RegWrite),
 		.bne(control__out__bne),
