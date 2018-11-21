@@ -23,9 +23,15 @@
 module Control(input [5:0] opcode,
                input reset,
                output reg 
-               //EX_Flush, ID_Flush, IF_Flush
-               RegDst,Branch,Bne,MemRead,MemtoReg
-               ,MemWrite,ALUSrc,RegWrite,jump
+               jump,
+               Branch,
+               Bne,
+               MemRead,
+               MemtoReg ,
+               MemWrite,
+               ALUSrc,
+               RegWrite,
+               RegDst
                ,output reg [1:0] ALUOp);
 
                    initial begin

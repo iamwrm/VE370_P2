@@ -17,6 +17,7 @@
 `include "Sign_Extend.v"
 `include "If_Equal.v"
 `include "Data_Mem.v"
+`include "Control.v"
 
 
 
@@ -111,7 +112,54 @@ module pipeline(
 
 	// TODO: Control
 
-	// TODO: Mux
+	
+	wire 
+			control__out__jump,
+			control__out__branch,
+			control__out__bne,
+			control__out__MemRead,
+			control__out__MemtoReg,
+			control__out__MemWrite,
+			control__out__ALUSrc,
+			control__out__RegWrite,
+			control__out__RegDst ;
+	wire [1:0]	control__out__ALUOp;
+
+ 	Control control (.opcode(if_id__out__ins_32[31:26]),
+		.reset(reset),
+		.jump(control__out__jump),
+		.Branch(control__out__branch),
+		.Bne(control__out__bne),
+		// 
+		.MemRead(control__out__MemRead),
+		.MemtoReg(control__out__MemtoReg) ,
+		.MemWrite(control__out__MemWrite),
+		.ALUSrc(control__out__ALUSrc),
+		.RegWrite(control__out__RegWrite),
+		.RegDst(control__out__RegDst),
+		.ALUOp(control__out__ALUOp)
+	);
+
+	wire [7:0] 	control__out__combined;
+	assign control__out__combined = {
+			control__out__MemRead,
+			control__out__MemtoReg,
+			control__out__MemWrite,
+			control__out__ALUSrc,
+			control__out__RegWrite,
+			control__out__RegDst,
+			control__out__ALUOp};
+
+
+	wire 		mux_control_out__in__id_ex_flush;
+	wire [7:0]	mux_control_out__out__combined;
+
+	MUX221 #(8)	mux_control_out(
+		.sel(mux_control_out__in__id_ex_flush),
+		.a(control__out__combined),
+		.b(8'h0),
+		.out(mux_control_out__out__combined)
+	);
 
 
 	wire [31:0] sign_extend__out__data_32;
@@ -210,6 +258,22 @@ module pipeline(
 			id_ex__out__ReadRegister2_5,
 			id_ex__out__Rt_5,
 			id_ex__out__Rd_5;
+
+	assign id_ex__in__RegDst = mux_control_out__out__combined[2];
+	assign id_ex__in__MemRead = mux_control_out__out__combined[7];
+	assign id_ex__in__MemtoReg = mux_control_out__out__combined[6];
+	assign id_ex__in__MemWrite = mux_control_out__out__combined[5];
+	assign id_ex__in__ALUSrc = mux_control_out__out__combined[4];
+	assign id_ex__in__RegWrite = mux_control_out__out__combined[3];
+	assign id_ex__in__ALUOp_2=mux_control_out__out__combined[1:0];
+
+	assign id_ex__in__ReadRegister1_5=reg_file__in__read_addr_1_5;
+	assign id_ex__in__ReadRegister2_5=reg_file__in__read_addr_2_5;
+	assign id_ex__in__Rt_5=reg_file__in__write_addr_2_5;
+	assign id_ex__in__Rd_5=if_id__out__ins_32[15:11];
+
+
+	
 	ID_EX id_ex(.clk(clock), .reset(reset),
 	        .RegDst(id_ex__in__RegDst),
 		.MemRead(id_ex__in__MemRead),
@@ -246,6 +310,9 @@ module pipeline(
 		.RtEX(id_ex__out__Rt_5),
 		.RdEX(id_ex__out__Rd_5)
 	);
+
+
+
 
 	
 
