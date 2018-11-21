@@ -20,12 +20,24 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Hazard( input ID_EX_MemRead,EX_MEM_MemRead,ID_EX_RegWrite,ID_EX_RegDst,
-                     clk,jump,bne,beq,IfEqual,
-               input [4:0] ID_EX_RegisterRt,ID_EX_RegisterRd,
-                           IF_ID_RegisterRs, IF_ID_RegisterRt,
-                           EX_MEM_RegisterRd,
-               output PC_Hold,IF_ID_Hold,ID_EX_Flush,IF_Flush);
+module Hazard( input ID_EX_MemRead,
+                EX_MEM_MemRead,
+                ID_EX_RegWrite,
+                ID_EX_RegDst,
+                jump,
+                bne,
+                beq,
+                IfEqual,
+               input [4:0] ID_EX_RegisterRt,
+               ID_EX_RegisterRd,
+                IF_ID_RegisterRs, 
+                IF_ID_RegisterRt,
+                EX_MEM_RegisterRd,
+               output PC_Hold,
+               IF_ID_Hold,
+               ID_EX_Flush,
+               IF_Flush
+);
                
      assign PC_Hold=(
                ((ID_EX_MemRead==1'b1)&&((ID_EX_RegisterRt==IF_ID_RegisterRs)
