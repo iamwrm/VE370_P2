@@ -22,7 +22,7 @@
 
 
 
-module pipeline(
+module Pipeline(
 	input clock,
 	input reset,
 	input [4:0] register_switch, 
@@ -173,11 +173,8 @@ module pipeline(
 
 
 
-	// TODO: Control
-
 	
-	wire 
-			control__out__jump,
+	wire 		control__out__jump,
 			control__out__branch,
 			control__out__bne,
 			control__out__MemRead,
@@ -185,7 +182,8 @@ module pipeline(
 			control__out__MemWrite,
 			control__out__ALUSrc,
 			control__out__RegWrite,
-			control__out__RegDst ;
+			control__out__RegDst;
+
 	wire [1:0]	control__out__ALUOp;
 
  	Control control (.opcode(if_id__out__ins_32[31:26]),
@@ -204,14 +202,13 @@ module pipeline(
 	);
 
 
-	wire 	
-		hazard__out__pc_hold,
+	wire 	hazard__out__pc_hold,
 		hazard__out__if_id_hold,
 		hazard__out__id_ex_flush,
-		hazard__out__if_flush
-		;
+		hazard__out__if_flush ;
 	wire 	if_equal__out__if_zero;
-	// TODO:
+
+
 	Hazard hazard(
 			.ID_EX_MemRead(id_ex__out__MemRead),
 			.EX_MEM_MemRead(ex_mem__out__MemRead),
@@ -443,7 +440,6 @@ module pipeline(
 		.control(alu__in__alu_control)
 	);
 
-	// TODO: Forwarding Unit	
 
 	Forwarding forwarding(
 		.MEM_WB_RegWrite(mem_wb__out__RegWriteWB) ,
