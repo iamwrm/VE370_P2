@@ -42,7 +42,7 @@ module pipeline_tb;
 //        $dumpfile("pipeline.vcd");
 //        $dumpvars(1, uut);
         $display("Texual result of pipeline:");
-        $display("=================================================");
+        $display("==========================================================");
         #630;
         $stop;
 	end
@@ -61,7 +61,7 @@ module pipeline_tb;
         $display("[$s6] = 0x%H, [$s7] = 0x%H, [$t0] = 0x%H", uut.reg_file.registers[22], uut.reg_file.registers[23], uut.reg_file.registers[8]);
         $display("[$t1] = 0x%H, [$t2] = 0x%H, [$t3] = 0x%H", uut.reg_file.registers[9], uut.reg_file.registers[10], uut.reg_file.registers[11]);
         $display("[$t4] = 0x%H, [$t5] = 0x%H, [$t6] = 0x%H", uut.reg_file.registers[12], uut.reg_file.registers[13], uut.reg_file.registers[14]);
-        $display("[$t7] = 0x%H, [$t8] = 0x%H, [$t9] = 0x%H", uut.reg_file.registers[15], uut.reg_file.registers[16], uut.reg_file.registers[17]);
+        $display("[$t7] = 0x%H, [$t8] = 0x%H, [$t9] = 0x%H", uut.reg_file.registers[15], uut.reg_file.registers[24], uut.reg_file.registers[25]);
         $display("=================================================");
 
         clk = ~clk;

@@ -36,7 +36,7 @@ module Reg_File(input clk ,RegWrite,
             end
         end
         
-        always@(posedge clk)
+        always@(negedge clk)
         begin
             if(RegWrite)
                 registers[WriteReg] = WriteData;
