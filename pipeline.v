@@ -185,6 +185,7 @@ module Pipeline(
 	);
 
 
+	//MUX221 #(32) mux_pc_in_2(.sel(1'b1),
 	MUX221 #(32) mux_pc_in_2(.sel(control__out__jump),
 	.a(jump_address__out__data_32),
 	.b(mux_pc_in_1__out_32),
@@ -199,6 +200,12 @@ module Pipeline(
 		.address(pc__out__address_32)
 	);
     	assign pc_out=pc__out__address_32;
+
+
+	wire [25:0] jump_address__in__jump_where;
+	assign jump_address__in__jump_where = if_id__out__ins_32[25:0];
+	wire [3:0] jump_address__in__PcNext;
+	assign jump_address__in__PcNext = PcNext;
 
 	Jump_Address jump_address(
 		.JumpWhere26(if_id__out__ins_32[25:0]),
@@ -241,10 +248,6 @@ module Pipeline(
 		.RegDst(control__out__RegDst),
 		.ALUOp(control__out__ALUOp)
 	);
-
-
-	assign id_ex__in__ReadRegister1_5 = if_id__out__ins_32[25:21];
-	assign id_ex__in__ReadRegister2_5 = if_id__out__ins_32[20:16];
 
 
 	Hazard hazard(
@@ -298,6 +301,7 @@ module Pipeline(
 	Sign_Extend sign_extend(.small_In(if_id__out__ins_32[15:0]),
 		.big_Out(sign_extend__out__data_32)
 	);
+
 
 
 

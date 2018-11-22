@@ -38,5 +38,9 @@ module IF_ID(input clk,hold,Flush,
              out_Addr<=Addr;
              end
              end
+             initial begin
+             out_Instr <= 32'b0;
+             out_Addr <= 32'b0;
+             end
              
 endmodule
