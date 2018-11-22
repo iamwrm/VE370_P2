@@ -149,7 +149,7 @@ module Pipeline(
          		;
 	wire 		Fw1;
     	wire [31:0] 	mux_regfile_out_1__out__data_32;
-    	wire [31:0] 	ex_mem__out__address_32;
+    	//wire [31:0] 	ex_mem__out__address_32;
 	wire Fw2;
    	wire [31:0] 	mux_regfile_out_2__out__data_32;
 	wire [31:0]	mux_ex_1__out__data_32;
@@ -185,8 +185,8 @@ module Pipeline(
 	);
 
 
-	//MUX221 #(32) mux_pc_in_2(.sel(1'b1),
-	MUX221 #(32) mux_pc_in_2(.sel(control__out__jump),
+	MUX221 #(32) mux_pc_in_2(.sel(1'b1),
+	//MUX221 #(32) mux_pc_in_2(.sel(control__out__jump),
 	.a(jump_address__out__data_32),
 	.b(mux_pc_in_1__out_32),
 	.out(mux_pc_in_2__out_32)
@@ -302,6 +302,9 @@ module Pipeline(
 		.big_Out(sign_extend__out__data_32)
 	);
 
+	assign id_ex__in__ExtendedIm_32 = sign_extend__out__data_32;
+
+	
 
 
 
@@ -328,7 +331,7 @@ module Pipeline(
 	MUX221 #(32) mux_regfile_out_1(
 		.sel(Fw1),
 		.a(reg_file__out__read_data_1_32),
-		.b(ex_mem__out__address_32), 
+		.b(ex_mem__out__ALUResult_32), 
 		.out(mux_regfile_out_1__out__data_32)
 	);
 
@@ -337,7 +340,7 @@ module Pipeline(
 	MUX221 #(32) mux_regfile_out_2(
 		.sel(Fw2),
 		.a(reg_file__out__read_data_2_32),
-		.b(ex_mem__out__address_32), 
+		.b(ex_mem__out__ALUResult_32), 
 		.out(mux_regfile_out_2__out__data_32)
 	);
 
@@ -440,6 +443,8 @@ module Pipeline(
 		.out(mux_ex_3__out__data_32)
 	);
 
+	assign mux_ex_4__in__RegDst = id_ex__out__RegDst;
+
 	MUX221 #(5) mux_ex_4(
 		.sel(mux_ex_4__in__RegDst),
 		.a(id_ex__out__ReadRegister2_5),
@@ -456,6 +461,9 @@ module Pipeline(
 		.result(alu__out__data_32)
 	);
 
+
+	assign alu_control__in__ALUop = id_ex__out__ALUOp_2;
+	assign alu_control__in__funct = id_ex__out__ExtendedIm_32[5:0];
 
 	ALU_Control alu_control(
 		.funct(alu_control__in__funct),
@@ -484,6 +492,13 @@ module Pipeline(
 		.Fw2(Fw2)
 	);
 
+
+	assign ex_mem__in__MemRead = id_ex__out__MemRead;
+	assign ex_mem__in__MemtoReg = id_ex__out__MemtoReg;
+	assign ex_mem__in__MemWrite = id_ex__out__MemWrite;
+	assign ex_mem__in__RegWrite = id_ex__out__RegWrite;
+	assign ex_mem__in__ReadData_32 = mux_ex_2__out__data_32;
+	assign ex_mem__in__ALUResult_32 = alu__out__data_32;
 
 
 	EX_MEM ex_mem( 
@@ -523,9 +538,10 @@ module Pipeline(
 	//	output [31:0]
 		.Read_data(data_mem__out__Data_32)
 	);
-
+	
 
 	assign mem_wb__in__RegWrite = ex_mem__out__RegWrite;
+	assign mem_wb__in__MemtoReg = ex_mem__out__MemtoReg;
 	MEM_WB mem_wb(.clk(clock),
 	//              input 
 			.MemtoReg(mem_wb__in__MemtoReg),
