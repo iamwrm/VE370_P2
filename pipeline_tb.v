@@ -33,8 +33,7 @@ module pipeline_tb;
 
 	// Instantiate the Unit Under Test (UUT)
 	Pipeline uut (
-		.clock(clk),
-        .reset(1'b0)
+		.clock(clk)
 	);
 
 	initial begin

@@ -20,17 +20,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module PC( input clk,reset,hold,
+module PC( input clk,hold,
            input [31:0] next,
            output reg [31:0] address);
-    
-    always @(posedge clk,reset) begin
-    
+        initial begin
+           address<=32'b0;
+           end
+    always @(posedge clk) begin
     if(hold==1'b1)  address<=address;
     else address <= next;
         end
-    initial begin
-    address<=32'b0;
-    end
+
         
 endmodule

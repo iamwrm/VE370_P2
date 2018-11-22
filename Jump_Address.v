@@ -21,8 +21,8 @@
 
 
 module Jump_Address(input [25:0]JumpWhere26,
-                    input [31:0] PCNext,
+                    input [3:0] PCNext_4,
                     output [31:0] JumpAddress );
-  assign JumpAddress={PCNext[31:28],JumpWhere26[25:0],2'b0};
+  assign JumpAddress={PCNext_4[3:0],JumpWhere26[25:0],2'b0};
                     
 endmodule

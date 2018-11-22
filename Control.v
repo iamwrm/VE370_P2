@@ -21,7 +21,6 @@
 
 
 module Control(input [5:0] opcode,
-               input reset,
                output reg 
                jump,
                Branch,
@@ -33,7 +32,7 @@ module Control(input [5:0] opcode,
                RegWrite,
                RegDst
                ,output reg [1:0] ALUOp);
-
+               
                    initial begin
                        RegDst      = 1'b0;
                        jump        = 1'b0;
@@ -47,7 +46,7 @@ module Control(input [5:0] opcode,
                        ALUOp       = 2'b00;
                    end
 
-         always @(reset,opcode)begin      
+         always @(opcode)begin      
                case(opcode)
                6'b000000://add, sub, and, or, slt
                begin

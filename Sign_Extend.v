@@ -21,8 +21,6 @@
 
 
 module Sign_Extend(input [15:0] small_In ,
-                   output reg [31:0] big_Out);
-                   always @(small_In) begin
-                   big_Out[31:0]={{16{small_In[15]}},small_In[15:0]};
-                   end
+                   output wire [31:0] big_Out);
+                  assign big_Out={{16{small_In[15]}},small_In[15:0]};
 endmodule

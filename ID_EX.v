@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module ID_EX(input clk,reset,
+module ID_EX(input clk,
              input RegDst,MemRead
              ,MemtoReg,MemWrite,ALUSrc
              ,RegWrite,
@@ -38,9 +38,8 @@ module ID_EX(input clk,reset,
              output reg[4:0] ReadRegister1EX
              ,ReadRegister2EX,RtEX,RdEX
              );
-             always @(posedge clk,reset) begin
-             if(reset==1'b1)
-             begin
+             
+             initial begin
              RegDstEX<=1'b0;
              MemReadEX<=1'b0;
              MemtoRegEX<=1'b0;
@@ -56,7 +55,7 @@ module ID_EX(input clk,reset,
              RtEX<=5'b00000;
              RdEX<=5'b00000;
              end
-             else begin
+always @(posedge clk) begin
                  RegDstEX<=RegDst;
                  MemReadEX<=MemRead;
                  MemtoRegEX<=MemtoReg;
@@ -71,6 +70,5 @@ module ID_EX(input clk,reset,
                  ReadRegister2EX<=ReadRegister2;
                  RtEX<=Rt;
                  RdEX<=Rd;
-                 end
                  end    
 endmodule

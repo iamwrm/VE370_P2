@@ -25,7 +25,7 @@ module Instruction_Mem(input [31:0] addr,
                       
 wire [31:0] memory[0:31];
 wire [31:0] A;
-assign A=2'b00+ addr[31:2];
+assign A=addr>>2;
 assign out_Instr = memory[A];
 
 assign memory[0] = 32'b00100000000010000000000000100000; //addi $t0, $zero, 0x20

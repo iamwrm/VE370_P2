@@ -20,16 +20,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module IF_ID(input clk,reset,hold,Flush,
+module IF_ID(input clk,hold,Flush,
              input [31:0] Instr, Addr,
              output reg [31:0] out_Instr, out_Addr);
-             always @(posedge clk,reset) begin
-             if(reset==1'b1) 
-             begin
-             out_Instr<=32'b00000000000000000000000000000000;
-             out_Addr<=32'b00000000000000000000000000000000;
-             end
-             else if(Flush==1'b1)
+             always @(posedge clk) begin
+            if(Flush==1'b1)
              begin
              out_Instr<=32'b00000000000000000000000000000000;
              out_Addr<=out_Addr;             
