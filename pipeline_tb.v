@@ -43,12 +43,12 @@ module pipeline_tb;
 //        $dumpvars(1, uut);
         $display("Texual result of pipeline:");
         $display("==========================================================");
-        #630;
+        #315;
         $stop;
 	end
 
 	//wire [31:0] 	pc__out__address_32;
-    always #10 begin
+    always #5 begin
         $display("Time: %d, CLK = %d, PC = 0x%H", i, clk, uut.pc__out__address_32);
         // 
 //        $display("ins_mem_out: %d, ins_mem_in = %d, \ncontrol out combined = 0x%H", uut.ins_mem__out__ins_32, uut.pc__out__address_32, uut.control__out__combined);
