@@ -25,9 +25,8 @@ module Pipeline(
 	input clock,
 	input [4:0] register_switch, 
 	output [31:0] pc_out,  
-	output reg [31:0] register_out);
-
-
+	output [31:0] register_out);
+	
 	wire	
 			id_ex__in__RegDst,
 			id_ex__in__MemRead,
@@ -213,8 +212,6 @@ module Pipeline(
 		.JumpAddress(jump_address__out__data_32)
 	);
 
-	
-
 
 	Instruction_Mem ins_mem(.addr(pc__out__address_32),
 				.out_Instr(ins_mem__out__ins_32)
@@ -230,6 +227,8 @@ module Pipeline(
 		.out_Instr(if_id__out__ins_32),
 		.out_Addr(if_id__out__PCNext_32)
 	);
+
+
 
 
 
@@ -309,17 +308,19 @@ module Pipeline(
 
 
 
-    	assign reg_file__in__RegWrite=mem_wb__out__RegWriteWB;
+    assign reg_file__in__RegWrite=mem_wb__out__RegWriteWB;
 	assign reg_file__in__write_data_32 = mux_mem_wb_out__out__data_32;
 	assign reg_file__in__write_addr_2_5 = mem_wb__out__Rd;
 	Reg_File reg_file(.clk(clock), 
+	.Reg_switch(register_switch),
 		.RegWrite(reg_file__in__RegWrite),
 		.ReadRegister1(reg_file__in__read_addr_1_5),  
 		.ReadRegister2( reg_file__in__read_addr_2_5), 
 		.WriteReg(reg_file__in__write_addr_2_5),
 		.WriteData(reg_file__in__write_data_32),
 		.read_data1(reg_file__out__read_data_1_32), 
-		.read_data2(reg_file__out__read_data_2_32)
+		.read_data2(reg_file__out__read_data_2_32),
+		.Reg_Read(register_out)
 	);
 
 	assign reg_file__in__read_addr_1_5 = if_id__out__ins_32[25:21];
@@ -570,8 +571,8 @@ module Pipeline(
 		.out(mux_mem_wb_out__out__data_32)
 	);
 
-	initial begin
-	  register_out <= 32'b0;
-	end
+//	initial begin
+//	  register_out <= 32'b0;
+//	end
 
 endmodule

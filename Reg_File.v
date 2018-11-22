@@ -21,9 +21,9 @@
 
 
 module Reg_File(input clk ,RegWrite,
-              input [4:0] ReadRegister1, ReadRegister2,WriteReg,
-       	        input [31:0] WriteData,
-       	        output wire [31:0] read_data1, read_data2
+              input [4:0] ReadRegister1, ReadRegister2,WriteReg , Reg_switch,
+              input [31:0] WriteData,
+              output wire [31:0] read_data1, read_data2, Reg_Read
 );      
         reg[31:0] registers[0:31];
     integer i;
@@ -41,5 +41,6 @@ module Reg_File(input clk ,RegWrite,
             if(RegWrite)
                 registers[WriteReg] = WriteData;
         end
+        assign Reg_Read=registers[Reg_switch];
 
 endmodule

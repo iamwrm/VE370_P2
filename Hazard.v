@@ -44,15 +44,16 @@ module Hazard( input ID_EX_MemRead,
               ||(ID_EX_RegisterRt==IF_ID_RegisterRt)))
               || ((beq || bne) && ID_EX_MemRead==1'b1 && ((ID_EX_RegisterRt==IF_ID_RegisterRs)
               ||(ID_EX_RegisterRt==IF_ID_RegisterRt)))
-              ||((beq ||bne) &&  EX_MEM_MemRead && ((EX_MEM_RegisterRd==IF_ID_RegisterRs)
+              ||((beq ||bne) &&  EX_MEM_MemRead==1'b1 && ((EX_MEM_RegisterRd==IF_ID_RegisterRs)
               ||(EX_MEM_RegisterRd==IF_ID_RegisterRt)))
-              ||((beq || bne)&& ID_EX_RegWrite && 
-              ((ID_EX_RegDst&&((ID_EX_RegisterRd==IF_ID_RegisterRs)||(ID_EX_RegisterRd==IF_ID_RegisterRt)))
-              ||((!ID_EX_RegDst)&&((ID_EX_RegisterRt==IF_ID_RegisterRs)||(ID_EX_RegisterRt==IF_ID_RegisterRt)))))
+              ||((beq || bne)&& ID_EX_RegWrite==1'b1 && 
+              (((ID_EX_RegDst!=5'b0)&&((ID_EX_RegisterRd==IF_ID_RegisterRs)||(ID_EX_RegisterRd==IF_ID_RegisterRt)))
+              ||((ID_EX_RegDst==5'b0)&&((ID_EX_RegisterRt==IF_ID_RegisterRs)||(ID_EX_RegisterRt==IF_ID_RegisterRt)))))
                )? 1:0 ;
+               
                               assign ID_EX_Flush=PC_Hold;
                               assign IF_ID_Hold=PC_Hold;
-                              assign IF_Flush=(PC_Hold && (jump||(bne&&IfEqual==1'b0)||(beq&&IfEqual==1'b1)))?1:0;
+                              assign IF_Flush=(PC_Hold==1'b0 && (jump||(bne&&IfEqual==1'b0)||(beq&&IfEqual==1'b1)))?1:0;
 //     always @(*)
                               //               begin
                               //               if(PC_Hold && (jump||(bne&&IfEqual==1'b0)||(beq&&IfEqual==1'b1)))

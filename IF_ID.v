@@ -26,8 +26,8 @@ module IF_ID(input clk,hold,Flush,
              always @(posedge clk) begin
             if(Flush==1'b1)
              begin
-             out_Instr<=32'b00000000000000000000000000000000;
-             out_Addr<=out_Addr;             
+             out_Instr<=32'b0;
+             out_Addr<=32'b0;             
              end
              else if(hold==1'b1)begin
              out_Instr<=out_Instr;
