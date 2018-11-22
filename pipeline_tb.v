@@ -42,14 +42,14 @@ module pipeline_tb;
 //        $dumpfile("pipeline.vcd");
 //        $dumpvars(1, uut);
         $display("Texual result of pipeline:");
-        $display("==========================================================");
-        #600;
+        $display("=================================================");
+        #630;
         $stop;
 	end
 
 	//wire [31:0] 	pc__out__address_32;
     always #10 begin
-        $display("Time:%d, CLK = %d, PC = 0x%H", i, clk, uut.pc__out__address_32);
+        $display("Time: %d, CLK = %d, PC = 0x%H", i, clk, uut.pc__out__address_32);
         // 
 //        $display("ins_mem_out: %d, ins_mem_in = %d, \ncontrol out combined = 0x%H", uut.ins_mem__out__ins_32, uut.pc__out__address_32, uut.control__out__combined);
 //         $display("%d,  %d, 0x%H", 
@@ -60,7 +60,9 @@ module pipeline_tb;
         $display("[$s3] = 0x%H, [$s4] = 0x%H, [$s5] = 0x%H", uut.reg_file.registers[19], uut.reg_file.registers[20], uut.reg_file.registers[21]);
         $display("[$s6] = 0x%H, [$s7] = 0x%H, [$t0] = 0x%H", uut.reg_file.registers[22], uut.reg_file.registers[23], uut.reg_file.registers[8]);
         $display("[$t1] = 0x%H, [$t2] = 0x%H, [$t3] = 0x%H", uut.reg_file.registers[9], uut.reg_file.registers[10], uut.reg_file.registers[11]);
-        $display("==========================================================");
+        $display("[$t4] = 0x%H, [$t5] = 0x%H, [$t6] = 0x%H", uut.reg_file.registers[12], uut.reg_file.registers[13], uut.reg_file.registers[14]);
+        $display("[$t7] = 0x%H, [$t8] = 0x%H, [$t9] = 0x%H", uut.reg_file.registers[15], uut.reg_file.registers[16], uut.reg_file.registers[17]);
+        $display("=================================================");
 
         clk = ~clk;
         if (~clk) i = i + 1;
