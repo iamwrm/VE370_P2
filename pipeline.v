@@ -167,6 +167,7 @@ module Pipeline(
 	wire [5:0] 	alu_control__in__funct;
     	wire [1:0] 	alu_control__in__ALUop;
     
+    	//assign 		 mux_pc_in_2__out_32=pc__in__next_32;
     	assign 		pc__in__next_32 = mux_pc_in_2__out_32;
 
     	assign 	IfBr = ((if_equal__out__if_zero)&&(control__out__branch==1'b1))
@@ -185,10 +186,9 @@ module Pipeline(
 	);
 
 
-	MUX221 #(32) mux_pc_in_2(.sel(1'b1),
-	//MUX221 #(32) mux_pc_in_2(.sel(control__out__jump),
-	.a(jump_address__out__data_32),
-	.b(mux_pc_in_1__out_32),
+	MUX221 #(32) mux_pc_in_2(.sel(control__out__jump),
+	.a(mux_pc_in_1__out_32),
+	.b(jump_address__out__data_32),
 	.out(mux_pc_in_2__out_32)
 	);
 
