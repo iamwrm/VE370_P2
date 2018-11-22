@@ -51,7 +51,8 @@ module pipeline_tb;
     always #5 begin
         $display("Time: %d, CLK = %d, PC = 0x%H", i, clk, uut.pc__out__address_32);
         // 
-//        $display("ins_mem_out: %d, ins_mem_in = %d, \ncontrol out combined = 0x%H", uut.ins_mem__out__ins_32, uut.pc__out__address_32, uut.control__out__combined);
+        $display("if_id__in__hold: %d flush %d",uut.if_id__in__hold,uut.if_id__in__flush);
+        $display("fw1: %d fw2 %d",uut.Fw1,uut.Fw2);
 //         $display("%d,  %d, 0x%H", 
 //         uut.reg_file__in__write_data_32, uut.reg_file__in__write_addr_2_5, uut.id_ex__in__ExtendedIm_32);
         // $display("%d,  %d, 0x%H", 

@@ -213,6 +213,8 @@ module Pipeline(
 		.JumpAddress(jump_address__out__data_32)
 	);
 
+	
+
 
 	Instruction_Mem ins_mem(.addr(pc__out__address_32),
 				.out_Instr(ins_mem__out__ins_32)
@@ -228,8 +230,6 @@ module Pipeline(
 		.out_Instr(if_id__out__ins_32),
 		.out_Addr(if_id__out__PCNext_32)
 	);
-
-
 
 
 
