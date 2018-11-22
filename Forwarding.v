@@ -38,37 +38,37 @@ module Forwarding(input  MEM_WB_RegWrite ,EX_MEM_RegWrite,bne,beq,
                
                  always @(*)
                  begin
-                 if(((EX_MEM_RegWrite) && (EX_MEM_RegisterRd))
+                 if(((EX_MEM_RegWrite) && (EX_MEM_RegisterRd!=5'b0))
                   && (EX_MEM_RegisterRd==ID_EX_RegisterRs)) ForwardA= 2'b10;
-                 else if((((MEM_WB_RegWrite) && (MEM_WB_RegisterRd))
-                  && (MEM_WB_RegisterRd==ID_EX_RegisterRs))&& !(((EX_MEM_RegWrite)
-                  && (EX_MEM_RegisterRd))&& (EX_MEM_RegisterRd==ID_EX_RegisterRs))) 
+                 else if((((MEM_WB_RegWrite) && (MEM_WB_RegisterRd!=5'b0))
+                  && (MEM_WB_RegisterRd==ID_EX_RegisterRs))&& (!(((EX_MEM_RegWrite)
+                  && (EX_MEM_RegisterRd!=5'b0))&& (EX_MEM_RegisterRd==ID_EX_RegisterRs)))) 
                  ForwardA= 2'b01;
                  else ForwardA<= 2'b00;
                  end
                  
                  always @(*)
                  begin
-                 if(((EX_MEM_RegWrite) && (EX_MEM_RegisterRd))
+                 if(((EX_MEM_RegWrite) && (EX_MEM_RegisterRd!=5'b0))
                  && (EX_MEM_RegisterRd==ID_EX_RegisterRt)) ForwardB= 2'b10;
-                 else if((((MEM_WB_RegWrite) && (MEM_WB_RegisterRd))
-                 && (MEM_WB_RegisterRd==ID_EX_RegisterRt)) && !(((EX_MEM_RegWrite) 
-                 && (EX_MEM_RegisterRd))
-                 && (EX_MEM_RegisterRd==ID_EX_RegisterRt)))
+                 else if((((MEM_WB_RegWrite) && (MEM_WB_RegisterRd!=5'b0))
+                 && (MEM_WB_RegisterRd==ID_EX_RegisterRt)) && (!(((EX_MEM_RegWrite) 
+                 && (EX_MEM_RegisterRd!=5'b0))
+                 && (EX_MEM_RegisterRd==ID_EX_RegisterRt))))
                  ForwardB= 2'b01;
                  else ForwardB<= 2'b00;
                  end
                  
                   always @(*)
                   begin  
-                  if(EX_MEM_RegisterRd && EX_MEM_RegWrite &&(bne|| beq)
+                  if(EX_MEM_RegisterRd!=5'b0 && EX_MEM_RegWrite &&(bne|| beq)
                   && (EX_MEM_RegisterRd==IF_ID_RegisterRs)) Fw1= 1'b1;
                   else Fw1=1'b0;
                   end 
                   
                    always @(*)
                    begin  
-                   if(EX_MEM_RegisterRd && EX_MEM_RegWrite &(bne||beq)
+                   if(EX_MEM_RegisterRd!=5'b0 && EX_MEM_RegWrite &(bne||beq)
                    && (EX_MEM_RegisterRd==IF_ID_RegisterRt)) Fw2= 1'b1;
                    else Fw2=1'b0;
                    end 
